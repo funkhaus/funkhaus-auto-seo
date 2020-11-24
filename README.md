@@ -16,3 +16,4 @@ Automatically implement SEO best practices using the power of AI.
 1.  Clean up all the attempts to work around the above issue.
 1.  Add settings page for API key
 1.  Build out WP-JSON API too process all old images. Use Political Playlist emailer code to starters.
+1.  Give all functions a docbloc and run through PHP Prettier.
