@@ -28,6 +28,7 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
     
     // Some defaults
     $celebrities = "";
+    $brands = ""
     
     // Collect celebrity names in image
     if( !empty($azure_data->categories[0]->detail->celebrities) ) {
@@ -38,9 +39,22 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
             return $obj->name;
         }, $celebrities);        
         
-        // Set as sring of celebrity names        
+        // Set as string of celebrity names        
         $celebrities = implode(', ', $names) . " - ";
-    }      
+    }
+    
+    // Collect brand names in image
+    if( !empty($azure_data->brands) ) {
+        $brands = $azure_data->brands;
+        
+        // Turn array of objects into names
+        $names = array_map(function ($obj) {
+            return $obj->name;
+        }, $brands);        
+        
+        // Set as string of brand names        
+        $brands = implode(', ', $names) . " - ";
+    }           
     
     // Rename file to discription tags
     if( !empty($azure_data->description->tags) ) {
@@ -50,7 +64,7 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
         $tags = implode(' ', $tags);
         
         // Prepend with celebrities names if we have them
-        $name = $celebrities . $tags;
+        $name = $celebrities . $brands . $tags;
         $name = trim($name);
         
         // Rename file (this will santize the filename too)
@@ -74,16 +88,16 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
             return $obj->name;
         }, $azure_data->tags);   
 
-        // Save as sring of tag names
+        // Save as string of tag names
         $image_tags = implode(' ', $names);
         update_post_meta( $attachment_id, '_wp_attachment_image_alt', $image_tags );  
     }
     
-    // Save a timestamp of so we know image was run already
+    // Save a timestamp so we know image was processed already
     update_post_meta( $attachment_id, 'fh_seo_timestamp', date('Y-m-d H:i:s') );  
 
     // Save post data and return
-    return wp_update_post($args);;
+    return wp_update_post($args);
 }    
 
 /**
@@ -146,7 +160,7 @@ function fh_seo_delete_attachment_files($post_id) {
 }
 
 /**
- * Replace the use of old URLs in posts
+ * Replace the use of old URLs in post content
  * @SEE https://github.com/WordPress/WordPress/blob/f4cda1b62ffca52115e4b04d9d75047060d69e68/wp-includes/post.php#L5983
  *
  * @param string $post_id The WordPress post_id for the attachment
@@ -156,6 +170,6 @@ function fh_seo_replace_old_urls($old_url, $new_url) {
     /*
     <img class="alignnone size-medium wp-image-327" src="https://fuxt-backend.funkhaus.us/wp-content/uploads/2020/07/kevin-231x300.png" alt="" width="231" height="300" />
     
-    Perhaps the right move is to just delete images NOT used in a post? And leave those images as is.
+    Perhaps the right move is to just delete images NOT used in a post? And leave the other images as is.
     */
 }
