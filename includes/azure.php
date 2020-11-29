@@ -4,7 +4,7 @@
     }
 
 // Get image discription and tags from Azure    
-    function fh_seo_azure_post_describe($attachment_id)
+    function fh_seo_azure_post_analyze($attachment_id)
     {
         $options = get_option('fh_seo_settings');
         
@@ -12,7 +12,7 @@
             "url" => wp_get_attachment_url($attachment_id)
         ];
         
-        $response = wp_remote_post( fh_seo_azure_endpoint() . '/vision/v3.1/describe?maxCandidates=2', [
+        $response = wp_remote_post( fh_seo_azure_endpoint() . '/vision/v3.1/analyze?visualFeatures=Brands,Description,Tags&details=Celebrities,Landmarks', [
             'body'    => wp_json_encode($body),
             'headers' => [
                 'Content-Type' => 'application/json',

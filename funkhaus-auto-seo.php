@@ -31,7 +31,7 @@ add_action("add_attachment", "fh_seo_rename_and_discribe", 10, 1);
 function fh_seo_plugin_activated()
 {
     $defaults = [
-        "api_key" => "deb2fcfccc044b6ba1375877268f2d78",
+        "api_key" => "",
     ];
     add_option("fh_seo_settings", $defaults);
 }
@@ -57,11 +57,16 @@ function fh_seo_convert($upload, $context)
 }
 
 /**
- * When an attachment is added and we have a Post ID, rename and add meta data via Azure.
+ * Rename file and add meta data via Azure.
  */
 function fh_seo_rename_and_discribe($attachment_id)
 {
     $output = false;
+
+    // Abort if image was already ran through this previously
+    if( get_post_meta($attachment_id, 'fh_seo_timestamp', true) ) {
+        return false;
+    }
 
     // Only try this on formats Azure supports
     $type = get_post_mime_type($attachment_id);
@@ -75,7 +80,7 @@ function fh_seo_rename_and_discribe($attachment_id)
             return false;
     }
 
-    // Set color first as doesn't need Azure
+    // Set color first as we don't need Azure for this
     $output = fh_seo_attachment_set_colors($attachment_id);
 
     // Abort if no API key
@@ -92,30 +97,3 @@ function fh_seo_rename_and_discribe($attachment_id)
     
     return $output;
 }
-
-
-/*
-
-add_filter( 'wp_handle_upload_prefilter', 'custom_upload_filter' );
-function custom_upload_filter( $file ) {
- 
-        
-    $response = wp_remote_post( fh_seo_azure_endpoint() . '/vision/v3.1/describe?maxCandidates=2', [
-        'body'    => file_get_contents( $file['tmp_name'] ),
-        'headers' => [
-            'Content-Type' => 'application/octet-stream',
-            'Ocp-Apim-Subscription-Key' => $options['api_key'],
-        ],
-    ]);
-    
-    $body = wp_remote_retrieve_body($response);
-    $body = json_decode($body);    
-    
-    var_dump($body); die;
- 
- 
-    $file['name'] = $post_name . '-' . $file['name'];
-    return $file;
-}
-*/
-
