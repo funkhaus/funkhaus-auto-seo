@@ -5,7 +5,6 @@
 function fh_seo_generate($request) {
     $requested_id = $request->get_param('id') ?? false;
     $offset = $request->get_param('offset') ?? 0;
-
     $output = [];
     
     // Get one requested attachment? Or all?

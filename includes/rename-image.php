@@ -64,11 +64,11 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
         $tags = implode(' ', $tags);
         
         // Prepend with celebrities names if we have them
-        $name = $celebrities . $brands . $tags;
+        $name = ucwords($celebrities) . ucwords($brands) . ucfirst($tags);
         $name = trim($name);
         
         // Rename file (this will santize the filename too)
-        fh_seo_attachment_rename($attachment_id, $name);
+        fh_seo_attachment_rename($attachment_id, strtolower($name));
 
         // Set title to filename
     	$args['post_title'] = ucfirst($name);
