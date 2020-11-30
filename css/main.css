@@ -1,0 +1,40 @@
+.fh-seo-progress-status {
+    max-width: 1080px;
+    margin-bottom: 60px;
+}
+.fh-seo-bar {
+    height: 30px;
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+.fh-seo-progress {
+    height: 100%;
+    max-width: 100%;
+    width: 0;
+    background-color: #0071a1;
+}
+.fh-seo-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.fh-seo-stats,
+.fh-seo-log-text {
+    display: none;
+}
+.log-item {
+	display: block;
+    font-family: monospace;
+    white-space: pre;
+}
+.log-item.status-failed {
+    color: #cf4944;
+}
+.log-enabled .fh-seo-stats,
+.log-enabled .emailer-log-text {
+    display: block;
+}

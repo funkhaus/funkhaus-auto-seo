@@ -53,6 +53,7 @@ function fh_seo_convert_to_jpg($file_path, $file_url, $mime_type)
     if (imagejpeg($bg, $new_path, 85)) {
         // Is new file actually smaller?
         $size_after = filesize($new_path);
+        
         if ($size_after < $size_before) {
             // Delete old file
             unlink($file_path);
@@ -72,6 +73,7 @@ function fh_seo_convert_to_jpg($file_path, $file_url, $mime_type)
                 "New JPG not smaller than the original PNG " . $file_url
             );
         }
+        
     }
 
     // Didn't convert

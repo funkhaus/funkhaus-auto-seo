@@ -71,3 +71,24 @@ function fh_seo_image_has_transparency($image)
 
     return false;
 }
+
+/**
+ * Returns the total attachments that haven't been auto-seo'd before
+ */
+function fh_seo_get_total_new_attachments() {
+    $args = [
+        'post_status' => 'any',
+        'post_type' => 'attachment',
+        'post_mime_type' => ['image/jpeg', 'image/gif', 'image/png'],
+        'posts_per_page' => 1,
+        'meta_query' => [
+            [
+             'key' => 'fh_seo_timestamp',
+             'compare' => 'NOT EXISTS'
+            ],
+        ]
+    ];
+    $query = new WP_Query( $args );
+
+    return $query->found_posts;
+}

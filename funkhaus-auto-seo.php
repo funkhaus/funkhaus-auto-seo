@@ -12,11 +12,13 @@ Author URI:  http://funkhaus.us
  * Import required files
  */
 include_once plugin_dir_path(__FILE__) . "includes/utilities.php";
+include_once plugin_dir_path(__FILE__) . "includes/settings.php";
 include_once plugin_dir_path(__FILE__) . "includes/azure.php";
 include_once plugin_dir_path(__FILE__) . "includes/convert-image.php";
 include_once plugin_dir_path(__FILE__) . "includes/rename-image.php";
 include_once plugin_dir_path(__FILE__) . "includes/focal-point.php";
 include_once plugin_dir_path(__FILE__) . "includes/color-detect.php";
+include_once plugin_dir_path(__FILE__) . "includes/api.php";
 
 /*
  * Main WP hooks to fire our logic on.
@@ -61,14 +63,11 @@ function fh_seo_convert($upload, $context)
  */
 function fh_seo_rename_and_discribe($attachment_id)
 {
-    $output = false;
+    $output = [
+        "id" => $attachment_id
+    ];
 
-    // Abort if image was already ran through this previously
-    if( get_post_meta($attachment_id, 'fh_seo_timestamp', true) ) {
-        return false;
-    }
-
-    // Only try this on formats Azure supports
+    // Only try this on formats Azure and ColorThief support
     $type = get_post_mime_type($attachment_id);
     switch ($type) {
         case "image/jpeg":
@@ -81,19 +80,74 @@ function fh_seo_rename_and_discribe($attachment_id)
     }
 
     // Set color first as we don't need Azure for this
-    $output = fh_seo_attachment_set_colors($attachment_id);
+    $output['set_color'] = fh_seo_attachment_set_colors($attachment_id);
 
-    // Abort if no API key
+    // Abort now if no API key
     $options = get_option("fh_seo_settings");
     if (empty($options["api_key"])) {
         return false;
     }
 
     // Name and caption attachment
-    $output = fh_seo_attachment_set_name_and_caption($attachment_id);
+    $output['set_metadata'] = fh_seo_attachment_set_name_and_caption($attachment_id);
 
     // Set focal point
-    $output = fh_seo_attachment_set_focal_point($attachment_id);
+    $output['set_focal_point'] = fh_seo_attachment_set_focal_point($attachment_id);
+    
+    // Save a timestamp so we know image was processed already
+    update_post_meta( $attachment_id, 'fh_seo_timestamp', date('Y-m-d H:i:s') );
     
     return $output;
 }
+
+/*
+ * Enqueue any CSS & JS scripts
+ */
+function fh_seo_admin_scripts($hook_suffix)
+{
+    // Only load scripts on the emailer page
+    if ($hook_suffix == 'settings_page_auto-seo') {
+        wp_enqueue_script(
+            'fh_seo_main',
+            plugins_url("js/main.js", __FILE__),
+            null,
+            time()
+        );
+        wp_enqueue_style(
+            'fh_seo_main',
+            plugins_url("css/main.css", __FILE__),
+            null,
+            time()
+        );
+
+        // Import some JS vars from PHP
+        $js_vars = [
+            "api_url" => site_url('/wp-json/auto-seo'),
+            "nonce" => wp_create_nonce('wp_rest'),
+        ];
+
+        wp_add_inline_script(
+            'fh_seo_main',
+            'var fh_seo_vars = ' . wp_json_encode($js_vars),
+            'before'
+        );
+    }
+}
+add_action('admin_enqueue_scripts', 'fh_seo_admin_scripts');
+
+/*
+ * Register custom API endpoints
+ */
+function fh_seo_add_api_routes()
+{
+    // Use this to trigger a deploy at Netlify
+    register_rest_route("auto-seo", "/generate", [
+        [
+            "methods" => "POST",
+            "callback" => "fh_seo_generate",
+            'args' => ['id', 'offset'],
+            "permission_callback" => "fh_seo_permissions",
+        ],
+    ]);
+}
+add_action("rest_api_init", "fh_seo_add_api_routes");

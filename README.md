@@ -12,6 +12,4 @@ Automatically implement SEO best practices using the power of AI.
 
 ## TODO
 
-1. Get settings pages working
-1. Create API for regenerating old images (take code from PP emailer)
 1. Use this for focal point detect? Maybe as no-API fallback? https://github.com/xymak/smartcrop.php

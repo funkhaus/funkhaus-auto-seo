@@ -2,7 +2,7 @@
 /*
  * Required for file renaming to work WordPress
  */
-// require_once( ABSPATH . 'wp-admin/includes/image.php' );
+require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
 
 /**
@@ -28,7 +28,7 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
     
     // Some defaults
     $celebrities = "";
-    $brands = ""
+    $brands = "";
     
     // Collect celebrity names in image
     if( !empty($azure_data->categories[0]->detail->celebrities) ) {
@@ -92,9 +92,6 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
         $image_tags = implode(' ', $names);
         update_post_meta( $attachment_id, '_wp_attachment_image_alt', $image_tags );  
     }
-    
-    // Save a timestamp so we know image was processed already
-    update_post_meta( $attachment_id, 'fh_seo_timestamp', date('Y-m-d H:i:s') );  
 
     // Save post data and return
     return wp_update_post($args);
@@ -108,19 +105,12 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
 * @param string $new_file_name The filename (without extension) that you want to rename to
 */  
 function fh_seo_attachment_rename($post_id, $filename) {
+
     // Get path info of orginal file
     $og_url = wp_get_attachment_url($post_id);
     $og_path = get_attached_file($post_id);
     $path_info = pathinfo($og_path);
-    
-    // Delete old image sizes if we have them
-    /*
     $og_meta = get_post_meta($post_id, '_wp_attachment_metadata', true);
-    if( !empty($og_meta) ) {
-        // TODO Need to figure out how to replace old images in posts first 
-        fh_seo_delete_attachment_files($post_id);
-    }   
-    */ 
 
     // Santize filename
     $safe_filename = wp_unique_filename($path_info['dirname'], $filename);
@@ -128,48 +118,55 @@ function fh_seo_attachment_rename($post_id, $filename) {
     // Build out path to new file
     $new_path = $path_info['dirname']. "/" . $safe_filename . "." .$path_info['extension'];
     
-    // Rename the file and update it's location in WP
-    rename($og_path, $new_path);    
-    update_attached_file( $post_id, $new_path );
-    
-    // Replace any use of olds URLs in post content
-    /*
+    // Rename the file in the file system
+    rename($og_path, $new_path); 
+
+    // Delete old image sizes if we have them
     if( !empty($og_meta) ) {
-        //fh_seo_replace_old_urls($og_url);
+        fh_seo_delete_attachment_files($post_id);
     }
-    */
+
+    // Now save new path to file in WP
+    update_attached_file( $post_id, $new_path );
 
     // Register filter to update metadata
-    return add_filter('wp_update_attachment_metadata', function($data, $post_id, $new_path) {
-        return wp_generate_attachment_metadata($post_id, $new_path);            
+    $new_data = wp_generate_attachment_metadata($post_id, $new_path);    
+    return add_filter('wp_update_attachment_metadata', function($data, $post_id) use ($new_data) {        
+        return $new_data;
     }, 10, 2);
+
 }
 
 /**
- * Delete all old image files 
+ * Delete all old image files, if they aren't used post_content anywhere. 
+ * The dont-delete check isn't perfect, it will give a lot of false postives (keeping more files than it should), but it's best I could come up with.
  * @SEE https://github.com/WordPress/WordPress/blob/f4cda1b62ffca52115e4b04d9d75047060d69e68/wp-includes/post.php#L5983
  *
  * @param string $post_id The WordPress post_id for the attachment
  */ 
 function fh_seo_delete_attachment_files($post_id) {
+    
     $meta = wp_get_attachment_metadata( $post_id );
     $backup_sizes = get_post_meta( $post_id, '_wp_attachment_backup_sizes', true );
     $file = get_attached_file( $post_id );   
-
-    wp_delete_attachment_files( $post_id, $meta, $backup_sizes, $file ); 
-}
-
-/**
- * Replace the use of old URLs in post content
- * @SEE https://github.com/WordPress/WordPress/blob/f4cda1b62ffca52115e4b04d9d75047060d69e68/wp-includes/post.php#L5983
- *
- * @param string $post_id The WordPress post_id for the attachment
- */ 
-function fh_seo_replace_old_urls($old_url, $new_url) {
-    // TODO figure out how to update a post content for something like this:
-    /*
-    <img class="alignnone size-medium wp-image-327" src="https://fuxt-backend.funkhaus.us/wp-content/uploads/2020/07/kevin-231x300.png" alt="" width="231" height="300" />
+    $url = wp_get_attachment_url($post_id);
     
-    Perhaps the right move is to just delete images NOT used in a post? And leave the other images as is.
-    */
+    // Remove og image so it doesn't get deleted in wp_delete_attachment_files()
+    $meta['original_image'] = "";
+    
+    // Check if image is used in a post somehwere
+    $url_without_extension = fh_seo_replace_extension($url, '');
+    $args = [
+        "s" => $url_without_extension,
+        "posts_per_page" => 1,
+        "post_type" => "any",
+        'fields' => 'ids'
+    ];
+    $found = get_posts($args);
+
+    if( empty($found) ) {
+        return wp_delete_attachment_files( $post_id, $meta, $backup_sizes, $file );
+    }
+
+    return false;
 }
