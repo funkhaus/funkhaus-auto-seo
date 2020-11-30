@@ -1,6 +1,6 @@
 <?php 
 /*
- * TODO Does something
+ * API endpoint to regenerate all images, or a specific image. Best called in a loop from the frontend.
  */
 function fh_seo_generate($request) {
     $requested_id = $request->get_param('id') ?? false;
