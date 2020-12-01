@@ -12,4 +12,5 @@ Automatically implement SEO best practices using the power of AI.
 
 ## TODO
 
-1. Client side focal detect somehow?
+1. Use this for focal point detect? Maybe as no-API fallback? https://github.com/xymak/smartcrop.php
+1. Add "Settings" link to the plugin install page

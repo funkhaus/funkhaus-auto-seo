@@ -113,11 +113,11 @@ function fh_seo_attachment_rename($post_id, $filename) {
     $og_meta = get_post_meta($post_id, '_wp_attachment_metadata', true);
 
     // Santize filename
-    $safe_filename = wp_unique_filename($path_info['dirname'], $filename);
+    $safe_filename = wp_unique_filename($path_info['dirname'], $filename . "." . $path_info['extension']);
 
     // Build out path to new file
-    $new_path = $path_info['dirname']. "/" . $safe_filename . "." .$path_info['extension'];
-    
+    $new_path = $path_info['dirname']. "/" . $safe_filename;
+
     // Rename the file in the file system
     rename($og_path, $new_path); 
 
@@ -150,10 +150,7 @@ function fh_seo_delete_attachment_files($post_id) {
     $backup_sizes = get_post_meta( $post_id, '_wp_attachment_backup_sizes', true );
     $file = get_attached_file( $post_id );   
     $url = wp_get_attachment_url($post_id);
-    
-    // Remove og image so it doesn't get deleted in wp_delete_attachment_files()
-    $meta['original_image'] = "";
-    
+
     // Check if image is used in a post somehwere
     $url_without_extension = fh_seo_replace_extension($url, '');
     $args = [
