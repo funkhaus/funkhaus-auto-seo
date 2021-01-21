@@ -2,7 +2,7 @@
 /*
 Plugin Name: Auto SEO
 Description: Automatically implement SEO best practices using the power of AI.
-Version: 1.0
+Version: 2.0
 Author: Funkhaus
 Plugin URI: https://github.com/funkhaus/auto-seo
 Author URI: http://funkhaus.us
@@ -94,10 +94,10 @@ function fh_seo_rename_and_discribe($attachment_id)
 
     // Set focal point
     $output['set_focal_point'] = fh_seo_attachment_set_focal_point($attachment_id);
-    
+
     // Save a timestamp so we know image was processed already
     update_post_meta( $attachment_id, 'fh_seo_timestamp', date('Y-m-d H:i:s') );
-    
+
     return $output;
 }
 
@@ -106,7 +106,7 @@ function fh_seo_rename_and_discribe($attachment_id)
  */
 function fh_seo_admin_scripts($hook_suffix)
 {
-    // Only load scripts on the emailer page
+    // Only load scripts on the settings page
     if ($hook_suffix == 'settings_page_auto-seo') {
         wp_enqueue_script(
             'fh_seo_main',
@@ -133,8 +133,14 @@ function fh_seo_admin_scripts($hook_suffix)
             'before'
         );
     }
+
+    // Load focushaus scripts
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('focushaus', plugins_url('js/focushaus.js', __FILE__), 'jquery', '2.0b');
+    wp_enqueue_style('focushaus', plugins_url('css/focushaus.css', __FILE__), null, '2.0b');
 }
 add_action('admin_enqueue_scripts', 'fh_seo_admin_scripts');
+
 
 /*
  * Register custom API endpoints

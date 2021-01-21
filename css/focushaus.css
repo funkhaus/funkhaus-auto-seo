@@ -1,0 +1,24 @@
+.media-frame-content .thumbnail {
+    text-align: center;
+}
+.marker-wrap {
+    position: relative;
+    user-select: none;
+    display: inline-block;
+}
+.focal-point-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 20px;
+    width: 20px;
+    transform: translate(-50%, -50%);
+    cursor: move;
+    background-color: white;
+    opacity: 0.5;
+    border-radius: 100%;
+    border: 1px solid #000;
+}
+.focal-point-dragging .focal-point-indicator {
+    pointer-events: none;
+}
