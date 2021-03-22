@@ -69,9 +69,6 @@ function fh_seo_attachment_set_name_and_caption($attachment_id) {
         
         // Rename file (this will santize the filename too)
         fh_seo_attachment_rename($attachment_id, strtolower($name));
-
-        // Set title to filename
-    	$args['post_title'] = ucfirst($name);
     }
 
     // Add caption
