@@ -2,7 +2,7 @@
 /*
 Plugin Name: Auto SEO
 Description: Automatically implement SEO best practices using the power of AI.
-Version: 2.0
+Version: 2.1
 Author: Funkhaus
 Plugin URI: https://github.com/funkhaus/auto-seo
 Author URI: http://funkhaus.us
@@ -150,9 +150,12 @@ function fh_seo_add_api_routes()
     // Use this to trigger a deploy at Netlify
     register_rest_route("auto-seo", "/generate", [
         [
-            "methods" => "POST",
-            "callback" => "fh_seo_generate",
-            'args' => ['id', 'offset'],
+            "methods"   => "POST",
+            "callback"  => "fh_seo_generate",
+            'args' => [
+                'id'        => [],
+                'offset'    => []
+            ],
             "permission_callback" => "fh_seo_permissions",
         ],
     ]);
