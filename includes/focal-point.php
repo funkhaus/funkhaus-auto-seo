@@ -21,7 +21,7 @@
 
         // Convert to percentage positions 
         $xPercentage = round( $xPixel / $azure_data->metadata->width * 100, 2);
-        $yPercentage = round( $xPixel / $azure_data->metadata->height * 100, 2);
+        $yPercentage = round( $yPixel / $azure_data->metadata->height * 100, 2);
 
         // Save to ACF or regular meta field
         if ( class_exists('ACF') ) {
