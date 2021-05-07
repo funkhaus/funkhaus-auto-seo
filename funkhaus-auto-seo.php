@@ -19,6 +19,7 @@ include_once plugin_dir_path(__FILE__) . "includes/convert-image.php";
 include_once plugin_dir_path(__FILE__) . "includes/rename-image.php";
 include_once plugin_dir_path(__FILE__) . "includes/focal-point.php";
 include_once plugin_dir_path(__FILE__) . "includes/color-detect.php";
+include_once plugin_dir_path(__FILE__) . "includes/blurhash.php";
 include_once plugin_dir_path(__FILE__) . "includes/api.php";
 
 /*
@@ -82,6 +83,9 @@ function fh_seo_rename_and_discribe($attachment_id)
 
     // Set color first as we don't need Azure for this
     $output['set_color'] = fh_seo_attachment_set_colors($attachment_id);
+
+    // Set blurhash
+    $output['set_blurhash'] = fh_seo_attachment_set_bluehash($attachment_id);
 
     // Abort now if no API key
     $options = get_option("fh_seo_settings");
