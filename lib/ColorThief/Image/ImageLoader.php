@@ -80,6 +80,7 @@ class ImageLoader
     public function getAdapter($adapterType)
     {
         $classname = '\\ColorThief\\Image\\Adapter\\' . $adapterType . 'ImageAdapter';
+        require_once __DIR__ . '/Adapter/' . $adapterType . 'ImageAdapter.php';
 
         return new $classname();
     }
