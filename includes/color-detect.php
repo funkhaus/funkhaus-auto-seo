@@ -13,6 +13,7 @@ include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/VBox.php";
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/PQueue.php";    
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/CMap.php";        
 use ColorThief\ColorThief;
+use ColorThief\Image\ImageLoader;
 
 
 /**
@@ -27,12 +28,21 @@ function fh_seo_attachment_set_colors($attachment_id){
     $dominant_color = ColorThief::getColor($path);
     
     // Abort if no colors detected
-    if( empty($dominant_color) ) {
+    if ( empty($dominant_color) ) {
         return false;
     }
+
+    $loader = new ImageLoader();
+    $image = $loader->load($path);
+
+    $is_transparent = fh_seo_image_has_transparency($image);
     
     // Take RGB value, turn to hex
-    $hex = sprintf("#%02x%02x%02x", $dominant_color[0], $dominant_color[1], $dominant_color[2]);
+    if ( $is_transparent ) {
+        $hex = sprintf("#%02x%02x%02x%02x", $dominant_color[0], $dominant_color[1], $dominant_color[2], "00");
+    } else {
+        $hex = sprintf("#%02x%02x%02x", $dominant_color[0], $dominant_color[1], $dominant_color[2]);
+    }
     
     // Save to ACF or regular meta field
     if ( class_exists('ACF') ) {
