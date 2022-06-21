@@ -2,7 +2,7 @@
 /*
 Plugin Name: Auto SEO
 Description: Automatically implement SEO best practices using the power of AI.
-Version: 2.1
+Version: 2.11
 Author: Funkhaus
 Plugin URI: https://github.com/funkhaus/auto-seo
 Author URI: http://funkhaus.us
