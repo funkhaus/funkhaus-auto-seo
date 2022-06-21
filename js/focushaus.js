@@ -3,22 +3,18 @@ var focalPointUI = {
     init: function() {
         focalPointUI.handleEvents();
 
-        if (wp.media && wp.media.frame) {
-            // Setup marker on media overlay panel, after it opens (WP adds image by AJAX to panel)
-            wp.media.frame.on("edit:attachment", function() {
-                focalPointUI.setupImage();
-            });
-            wp.media.frame.on("refresh", function() {
-                focalPointUI.setupImage();
-            });
-        } else {
-            // Setup image on a Edit Media page
+        // Setup image on a Media Library overlay or sub-page, keep trying in case they open multiple media windows
+        setInterval(function() {
             focalPointUI.setupImage();
-        }
+        }, 200);
     },
 
     hasRequiredFields: function() {
         return jQuery(".focal-point").length;
+    },
+
+    hasLoaded: function() {
+        return jQuery(".marker-wrap").length;
     },
 
     // Bind the events to the mouse and input fields to update position in real time
@@ -64,10 +60,10 @@ var focalPointUI = {
     // Add a wraper around the img tag so that we can position the indicator correctly
     setupImage: function() {
         // Abort if no fields
-        if (!focalPointUI.hasRequiredFields) return;
+        if (!focalPointUI.hasRequiredFields()) return;
 
         // Abort if already run
-        if (jQuery(".marker-wrap").length) return;
+        if (focalPointUI.hasLoaded()) return;
 
         //Add marker-wrap to image (either in media overlay or on edit media page)
         $image = jQuery(
@@ -117,5 +113,8 @@ var focalPointUI = {
     }
 };
 jQuery(window).load(function() {
-    focalPointUI.init();
+    // Only start this on Media Library pages
+    if (jQuery("body.post-type-attachment").length) {
+        focalPointUI.init();
+    }
 });

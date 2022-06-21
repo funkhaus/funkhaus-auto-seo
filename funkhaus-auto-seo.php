@@ -140,8 +140,8 @@ function fh_seo_admin_scripts($hook_suffix)
 
     // Load focushaus scripts
     wp_enqueue_script('jquery');
-    wp_enqueue_script('focushaus', plugins_url('js/focushaus.js', __FILE__), 'jquery', '2.0b');
-    wp_enqueue_style('focushaus', plugins_url('css/focushaus.css', __FILE__), null, '2.0b');
+    wp_enqueue_script('focushaus', plugins_url('js/focushaus.js', __FILE__), 'jquery', '2.01');
+    wp_enqueue_style('focushaus', plugins_url('css/focushaus.css', __FILE__), null, '2.01');
 }
 add_action('admin_enqueue_scripts', 'fh_seo_admin_scripts');
 
