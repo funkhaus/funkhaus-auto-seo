@@ -8,12 +8,14 @@ include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/ColorThief.php";
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/ImageLoader.php";
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/IImageAdapter.php";    
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/ImageAdapter.php";    
+include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/GDImageAdapter.php";
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/ImagickImageAdapter.php";        
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/VBox.php";
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/PQueue.php";    
 include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/CMap.php";        
 use ColorThief\ColorThief;
 use ColorThief\Image\ImageLoader;
+use ColorThief\Image\Adapter\GDImageAdapter;
 
 
 /**
@@ -32,8 +34,9 @@ function fh_seo_attachment_set_colors($attachment_id){
         return false;
     }
 
-    $loader = new ImageLoader();
-    $image = $loader->load($path);
+    $loader = new GDImageAdapter();
+    $loader->loadFile($path);
+    $image = $loader->getResource();
 
     $is_transparent = fh_seo_image_has_transparency($image);
     
