@@ -27,7 +27,16 @@ use ColorThief\Image\Adapter\GDImageAdapter;
 function fh_seo_attachment_set_colors($attachment_id){
     
     $path = get_attached_file($attachment_id);
-    $dominant_color = ColorThief::getColor($path);
+    try {
+        $dominant_color = ColorThief::getColor($path);
+    } catch (Exception $e) {
+        $msg = $e->getMessage();
+        if ( str_contains($msg, "Unable to compute the color palette") ) {
+            return false;
+        } else {
+            throw $e;
+        }
+    }
     
     // Abort if no colors detected
     if ( empty($dominant_color) ) {
