@@ -25,7 +25,7 @@ function fh_seo_replace_extension($string, $new_extension = ".jpg")
  */
 function fh_seo_image_has_transparency($image)
 {
-    if (!is_resource($image)) {
+    if (!is_gd_image($image)) {
         throw new \InvalidArgumentException(
             "Image resource expected. Got: " . gettype($image)
         );
