@@ -4,19 +4,9 @@
  * Load all the ColorThief required files manually (to not use COmposer)
  * SEE https://github.com/ksubileau/color-thief-php
  */
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/ColorThief.php";
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/ImageLoader.php";
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/IImageAdapter.php";    
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/ImageAdapter.php";    
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/GDImageAdapter.php";
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/Image/Adapter/ImagickImageAdapter.php";        
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/VBox.php";
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/PQueue.php";    
-include_once plugin_dir_path(__FILE__) . "../lib/ColorThief/CMap.php";        
-use ColorThief\ColorThief;
-use ColorThief\Image\ImageLoader;
-use ColorThief\Image\Adapter\GDImageAdapter;
 
+use ColorThief\ColorThief;
+use ColorThief\Image\Adapter\GdAdapter;
 
 /**
 * Detect the primary color in the image.
@@ -25,7 +15,8 @@ use ColorThief\Image\Adapter\GDImageAdapter;
 * @returns int|bool Returns the ID of the attachment on success. False if nothing updated.
 */ 
 function fh_seo_attachment_set_colors($attachment_id){
-    
+    fh_load_colorthief();
+
     $path = get_attached_file($attachment_id);
     try {
         $dominant_color = ColorThief::getColor($path);
@@ -43,8 +34,8 @@ function fh_seo_attachment_set_colors($attachment_id){
         return false;
     }
 
-    $loader = new GDImageAdapter();
-    $loader->loadFile($path);
+    $loader = new GdAdapter();
+    $loader->loadFromPath($path);
     $image = $loader->getResource();
 
     $is_transparent = fh_seo_image_has_transparency($image);

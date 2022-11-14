@@ -4,13 +4,10 @@
  * Load all the Blurhash required files manually (to not use Composer)
  * SEE https://github.com/kornrunner/php-blurhash
  */
-include_once plugin_dir_path(__FILE__) . "../lib/Blurhash/AC.php";
-include_once plugin_dir_path(__FILE__) . "../lib/Blurhash/Base83.php";
-include_once plugin_dir_path(__FILE__) . "../lib/Blurhash/Color.php";
-include_once plugin_dir_path(__FILE__) . "../lib/Blurhash/DC.php";
-include_once plugin_dir_path(__FILE__) . "../lib/Blurhash/Blurhash.php";
-use kornrunner\Blurhash\Blurhash;
 
+fh_load_blurhash();
+
+use kornrunner\Blurhash\Blurhash;
 
 /**
 * Set the blurhash of attachment

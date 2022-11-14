@@ -12,6 +12,8 @@ Text Domain: funkhaus-auto-seo
 /*
  * Import required files
  */
+require_once plugin_dir_path(__FILE__) . 'lib/load.php';
+
 include_once plugin_dir_path(__FILE__) . "includes/utilities.php";
 include_once plugin_dir_path(__FILE__) . "includes/settings.php";
 include_once plugin_dir_path(__FILE__) . "includes/azure.php";
