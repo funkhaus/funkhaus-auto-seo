@@ -1,4 +1,9 @@
 <?php
+/**
+ * Focal point functions
+ *
+ * @package funkhaus-auto-seo
+ */
 
 /**
  * Get focal point from Azure and save to image
