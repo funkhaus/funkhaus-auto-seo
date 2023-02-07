@@ -144,15 +144,20 @@ function fh_seo_attachment_rename( $post_id, $filename ) {
 
 	// Register filter to update metadata
 	$new_data = wp_generate_attachment_metadata( $post_id, $new_path );
+
+	// phpcs:disable WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting
+	$current_error_reporting = error_reporting();
+	error_reporting( $current_error_reporting & ~E_WARNING );
 	add_filter(
 		'wp_update_attachment_metadata',
-		function( $data, $post_id ) use ( $new_data ) {
+		function( $data, $post_id ) use ( $new_data, $current_error_reporting ) {
+			error_reporting( $current_error_reporting );
 			return $new_data;
 		},
 		10,
 		2
 	);
-
+	// phpcs:enable
 }
 
 /**
