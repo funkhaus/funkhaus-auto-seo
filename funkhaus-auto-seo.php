@@ -28,12 +28,16 @@ require_once FH_AS_PATH . 'includes/color-detect.php';
 require_once FH_AS_PATH . 'includes/blurhash.php';
 require_once FH_AS_PATH . 'includes/api.php';
 
-/**
- * Main WP hooks to fire our logic on.
- */
-add_filter( 'wp_handle_upload', 'fh_seo_convert', 10, 2 );
-add_action( 'add_attachment', 'fh_seo_rename_and_discribe', 10, 1 );
 
+if ( ! fh_seo_is_gd_enabled() ) {
+	add_action( 'admin_notices', 'fh_seo_admin_notices' );
+} else {
+	/**
+	 * Main WP hooks to fire our logic on.
+	 */
+	add_filter( 'wp_handle_upload', 'fh_seo_convert', 10, 2 );
+	add_action( 'add_attachment', 'fh_seo_rename_and_discribe', 10, 1 );
+}
 
 /**
  * Plugin activated, setup default options
@@ -183,3 +187,22 @@ function fh_seo_add_api_routes() {
 	);
 }
 add_action( 'rest_api_init', 'fh_seo_add_api_routes' );
+
+/**
+ * Check if PHP GD module enabled.
+ *
+ * @return bool Returns true if enabled.
+ */
+function fh_seo_is_gd_enabled() {
+	return function_exists( 'imagecreatefrompng' );
+}
+
+/**
+ * Adds admin notice.
+ */
+function fh_seo_admin_notices() {
+	printf(
+		'<div class="notice notice-warning is-dismissible"><p>Warning: %s</p></div>',
+		__( '<b>Auto SEO</b> plugin requires GD php extension. Please install/enable it. For more information, please check <a href="https://www.php.net/manual/en/image.installation.php" target="_blank">documentation.</a>' )
+	);
+}
